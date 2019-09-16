@@ -28,8 +28,8 @@ end
 gem_package 'bundler'
 
 git node['app']['deploy_dir'] do
-  repository 'https://github.com/tonyfruzza/rails_demo.git'
-  reference 'master'
+  repository node['app']['repo_url']
+  reference node['app']['repo_branch']
   user node['app']['user']
   group node['app']['user']
   notifies :run, 'rails_prep[init_rails_app]', :immediate

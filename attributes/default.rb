@@ -1,4 +1,6 @@
 default['app'] = {
+  repo_url: 'https://github.com/tonyfruzza/rails_demo.git',
+  repo_branch: 'master',
   user: 'apprunner',
   env: 'development',
   deploy_dir: '/srv/rails_demo',
