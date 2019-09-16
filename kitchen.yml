@@ -1,0 +1,23 @@
+---
+driver:
+  name: ec2
+  region: us-west-2
+  availability_zone: us-west-2a
+  instance_type: t2.small
+  tags:
+    Name: testkitchen-rails_demo_app-<%= ENV['USER'] %>
+    Created-By: Test Kitchen
+    environment: test-kitchen
+
+driver_config:
+  require_chef_omnibus: 14
+provisioner:
+  name: chef_solo
+
+platforms:
+  - name: amazon
+
+suites:
+  - name: default
+    run_list:
+      - recipe[rails_demo]

@@ -1,0 +1,57 @@
+upstream puma {
+  server localhost:3000;
+  # server unix://<%= node['puma']['sock_name'] %>;
+}
+
+server {
+  listen 80 default_server deferred;
+
+  root <%= node['app']['deploy_dir'] %>/public;
+  access_log <%= node['app']['deploy_dir'] %>/log/nginx.access.log main;
+  error_log <%= node['app']['deploy_dir'] %>/log/nginx.error.log info;
+
+  # enable gzip compression 3/31/2017 INF-975
+  gzip on;
+  gzip_types  text/plain text/css application/xml application/json;
+  gzip_min_length 1000;
+  gzip_comp_level 6;
+  gzip_proxied any;
+
+  location ^~ /assets/ {
+    gzip_static on;
+    expires max;
+    add_header Cache-Control public;
+  }
+
+  try_files $uri/index.html $uri @puma;
+  location @puma {
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Host $http_host;
+    proxy_redirect off;
+
+    proxy_pass http://puma;
+
+    proxy_buffering off;
+    proxy_connect_timeout 159s;
+    proxy_send_timeout   600;
+    proxy_read_timeout   600;
+    proxy_buffer_size    64k;
+    proxy_buffers     16 32k;
+    proxy_busy_buffers_size 64k;
+    proxy_temp_file_write_size 64k;
+    proxy_pass_header Set-Cookie;
+    proxy_redirect     off;
+    proxy_hide_header  Vary;
+    proxy_set_header   Accept-Encoding '';
+    proxy_ignore_headers Cache-Control Expires;
+    proxy_set_header   Referer $http_referer;
+    proxy_set_header   Cookie $http_cookie;
+    proxy_set_header   X-Real-IP  $remote_addr;
+    proxy_set_header X-Forwarded-Host $host;
+    proxy_set_header X-Forwarded-Server $host;
+  }
+
+  error_page 500 502 503 504 /500.html;
+  client_max_body_size 50M;
+  keepalive_timeout 10;
+}
