@@ -6,7 +6,7 @@ description 'Installs/Configures nginx, puma rails server'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version '0.0.1'
 
-chef_version '>= 13'
+chef_version '>= 12'
 %w(amazon).each do |os|
   supports os
 end
